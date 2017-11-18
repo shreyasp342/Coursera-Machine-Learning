@@ -43,16 +43,12 @@ a2 = sigmoid(X * Theta1');
 a2 = [ones(size(a2,1),1), a2];
 h = sigmoid(a2 * Theta2');
 
-y1 = y;
-clear y
-y = zeros(size(y1,1),num_labels);
-for i = 1 : size(y1,1)
-    y(i,y1(i)) = 1;
+y1 = zeros(length(y),10);
+for k = 1 : length(y)
+    y1(k,y(k)) = 1;
 end
-J = ((1/m) * sum(sum(-y.*log(h) - (1-y).*log(1-h))));
-%+ ((lambda/(2*m)) * sum(Theta1(2:end).^2));
-regularizationTerm = (lambda/(2*m)) * (sum(sum(Theta1(2:end).^2)) + sum(sum(Theta2(2:end).^2)));
-J = J + regularizationTerm;
+J = ((1/m)*sum(-y.*log(h) - (1-y).*log(1-h))) + ((lambda/(2*m)) * sum(Theta1(2:end).^2));
+
 %
 % Part 2: Implement the backpropagation algorithm to compute the gradients
 %         Theta1_grad and Theta2_grad. You should return the partial derivatives of
