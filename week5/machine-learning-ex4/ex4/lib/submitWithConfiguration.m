@@ -174,6 +174,9 @@ end
 % Service configuration
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% function submissionUrl = submissionUrl()
+%   submissionUrl = 'https://www-origin.coursera.org/api/onDemandProgrammingImmediateFormSubmissions.v1';
+% end
 function submissionUrl = submissionUrl()
-  submissionUrl = 'https://www-origin.coursera.org/api/onDemandProgrammingImmediateFormSubmissions.v1';
+  submissionUrl = 'https://www.coursera.org/api/onDemandProgrammingImmediateFormSubmissions.v1';
 end

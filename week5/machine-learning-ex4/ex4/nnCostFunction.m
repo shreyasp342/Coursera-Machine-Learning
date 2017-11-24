@@ -1,4 +1,4 @@
-function [J grad] = nnCostFunction(nn_params, ...
+function [J, grad] = nnCostFunction(nn_params, ...
                                    input_layer_size, ...
                                    hidden_layer_size, ...
                                    num_labels, ...
@@ -39,9 +39,9 @@ Theta2_grad = zeros(size(Theta2));
 %         cost function computation is correct by verifying the cost
 %         computed in ex4.m
 X = [ones(size(X,1),1), X];
-a2 = sigmoid(X * Theta1');
-a2 = [ones(size(a2,1),1), a2];
-h = sigmoid(a2 * Theta2');
+a2j = sigmoid(X * Theta1');
+a2j = [ones(size(a2j,1),1), a2j];
+h = sigmoid(a2j * Theta2');
 
 y1 = y;
 clear y
@@ -51,8 +51,11 @@ for i = 1 : size(y1,1)
 end
 J = ((1/m) * sum(sum(-y.*log(h) - (1-y).*log(1-h))));
 %+ ((lambda/(2*m)) * sum(Theta1(2:end).^2));
-regularizationTerm = (lambda/(2*m)) * (sum(sum(Theta1(2:end).^2)) + sum(sum(Theta2(2:end).^2)));
+regularizationTerm = (lambda/(2*m)) * (sum(sum(Theta1(:,2:end).^2)) + sum(sum(Theta2(:,2:end).^2)));
+
 J = J + regularizationTerm;
+
+% clear a2 h y1
 %
 % Part 2: Implement the backpropagation algorithm to compute the gradients
 %         Theta1_grad and Theta2_grad. You should return the partial derivatives of
@@ -68,7 +71,26 @@ J = J + regularizationTerm;
 %         Hint: We recommend implementing backpropagation using a for-loop
 %               over the training examples if you are implementing it for the 
 %               first time.
-%
+
+for t = 1:m
+    a1 = X(t,:)';
+    a2 = a2j(t,:)';
+    a3 = h(t,:)';
+    
+%     delta3 = (a3 - y(t,:));
+%     delta2 = (delta3*Theta2) .* sigmoidGradient(a2);
+%     delta2 = delta2(2:end);
+
+    delta3 = a3 - y(t,:)';
+    delta2 = Theta2'*delta3 .* [0 sigmoidGradient(a1' * Theta1')]';
+        
+    Theta1_grad = Theta1_grad + (delta2(2:end)*a1');
+    Theta2_grad = Theta2_grad + (delta3*a2');
+end
+
+Theta1_grad = (1/m).*Theta1_grad;
+Theta2_grad = (1/m).*Theta2_grad;
+
 % Part 3: Implement regularization with the cost function and gradients.
 %
 %         Hint: You can implement this around the code for
@@ -77,23 +99,8 @@ J = J + regularizationTerm;
 %               and Theta2_grad from Part 2.
 %
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Theta1_grad(:,2:end) = Theta1_grad(:,2:end) + ((lambda/m)*Theta1(:,2:end));
+Theta2_grad(:,2:end) = Theta2_grad(:,2:end) + ((lambda/m)*Theta2(:,2:end));
 
 % -------------------------------------------------------------
 
@@ -101,6 +108,5 @@ J = J + regularizationTerm;
 
 % Unroll gradients
 grad = [Theta1_grad(:) ; Theta2_grad(:)];
-
 
 end
